@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<head>
+	<title>D3 Mapping Timeline</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="d3.slider.css" />
+<style>
+
+path {
+  fill: none;
+  stroke: #333;
+  stroke-width: .5px;
+}
+
+.land-boundary {
+  stroke-width: 1px;
+}
+
+.county-boundary {
+  stroke: #ddd;
+}
+
+.site {
+	stroke-width: .5px;
+  stroke: #333;
+  fill: #9cf;
+}
+
+#slider3 {
+  margin: 20px 0 10px 20px;
+  width: 900px;
+}
+
+</style>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://d3js.org/topojson.v1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="d3.slider.js"></script>
+</head>
+
+
+<body>
+
+<div id="slider3"></div>
+
+
+<script>
+
+var width = 960,
+    height = 600;
+
+var mapPath = "us.json";
+
+var data, sites;
+
+var projection = d3.geo.albersUsa()
+    .scale(1280)
+    .translate([width / 2, height / 2]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.json(mapPath, function(error, us) {
+  if (error) return console.error(error);
+
+  svg.append("path")
+      .datum(topojson.feature(us, us.objects.land))
+      .attr("d", path)
+      .attr("class", "land-boundary");
+
+  svg.append("path")
+      .datum(topojson.mesh(us, us.objects.counties, function(a, b) { return a !== b && (a.id / 1000 | 0) === (b.id / 1000 | 0); }))
+      .attr("d", path)
+      .attr("class", "county-boundary");
+
+  svg.append("path")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("d", path)
+      .attr("class", "state-boundary");
+
+d3.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv", function(data) {
+    console.log(data);
+    var data2={};
+    var keys = Object.keys(data[0]);
+    for (var i = 0; i < data.length; i++) {
+      if(data[i]["Country/Region"] == "US"){
+        var stuff=data[i]["Province/State"].match( /([^,]+),\s(\S+)/ )
+        if( stuff != null ){
+          var state = stuff[2];
+          var city = stuff[1];
+          //console.log(stuff);
+          if( data2[state] == null ){
+            data2[state]=data[i];
+            for(var j=4; j < keys.length; j++){
+              data2[state][ keys[j] ] = parseInt( data[i][ keys[j] ] );
+            }
+          }else{
+            //console.log("OMG");
+            
+            for(var j=4; j < keys.length; j++){
+              data2[state][ keys[j] ] = parseInt( data2[state][ keys[j] ] ) + parseInt( data[i][ keys[j] ] );
+            }
+          }
+        }
+      }
+    }
+    console.log(data2);
+});
+
+/*
+d3.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv").then(function(data) {
+  console.log(data[0]);
+});
+*/
+
+  d3.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv")
+    .row(function(d) {
+      return {
+        lat: parseFloat(d.Lat),
+        lng: parseFloat(d.Long),
+        city: d["Province/State"],
+        region: d["Country/Region"],
+        cases: {
+          "1/22/20": d["1/22/20"],
+          "1/23/20": d["1/23/20"],
+          "1/24/20": d["1/24/20"],
+          "1/25/20": d["1/25/20"],
+          "1/26/20": d["1/26/20"],
+          "1/27/20": d["1/27/20"],
+          "1/28/20": d["1/28/20"],
+          "1/29/20": d["1/29/20"],
+          "1/30/20": d["1/30/20"],
+          "1/31/20": d["1/31/20"],
+          "2/1/20": d["2/1/20"],
+          "2/2/20": d["2/2/20"],
+          "2/3/20": d["2/3/20"],
+          "2/4/20": d["2/4/20"],
+          "2/5/20": d["2/5/20"],
+          "2/6/20": d["2/6/20"],
+          "2/8/20": d["2/8/20"],
+          "2/9/20": d["2/9/20"],
+          "2/10/20": d["2/10/20"],
+          "2/11/20": d["2/11/20"],
+          "2/12/20": d["2/12/20"],
+          "2/13/20": d["2/13/20"],
+          "2/14/20": d["2/14/20"],
+          "2/15/20": d["2/15/20"],
+          "2/16/20": d["2/16/20"],
+          "2/17/20": d["2/17/20"],
+          "2/18/20": d["2/18/20"],
+          "2/19/20": d["2/19/20"],
+          "2/20/20": d["2/20/20"],
+          "2/21/20": d["2/21/20"],
+          "2/22/20": d["2/22/20"],
+          "2/23/20": d["2/23/20"],
+          "2/24/20": d["2/24/20"],
+          "2/25/20": d["2/25/20"],
+          "2/26/20": d["2/26/20"],
+          "2/27/20": d["2/27/20"],
+          "2/28/20": d["2/28/20"],
+          "2/29/20": d["2/29/20"],
+          "3/1/20": d["3/1/20"],
+          "3/2/20": d["3/2/20"],
+          "3/3/20": d["3/3/20"],
+          "3/4/20": d["3/4/20"],
+          "3/5/20": d["3/5/20"],
+          "3/6/20": d["3/6/20"],
+          "3/7/20": d["3/7/20"],
+          "3/8/20": d["3/8/20"],
+          "3/9/20": d["3/9/20"],
+          "3/10/20": d["3/10/20"],
+          "3/11/20": d["3/11/20"],
+        }
+      };
+    })
+    .get(function(err, rows) {
+    	if (err) return console.error(err);
+      data=rows;
+      window.site_data = rows;
+
+      sites = svg.selectAll(".site")
+      .data(data, function(d) {
+        return d.city;
+      });
+      sites.enter().append("circle")
+      .attr("class", "site")
+      .attr("region", function(d) { return d.region })
+      .attr("city", function(d) { return d.city })
+      .attr("cases", function(d) { return d.cases[ Object.keys(d.cases)[0] ] })
+      .attr("cx", function(d) {
+        if(projection([d.lng, d.lat]) != null)
+          return projection([d.lng, d.lat])[0];
+        else
+          return -99999999;
+      })
+      .attr("cy", function(d) {
+        if(projection([d.lng, d.lat]) != null)
+          return projection([d.lng, d.lat])[1];
+        else
+          return -999999999;
+      })
+      .transition().duration(100)
+        .attr("r", function(d){
+          var cases = d.cases[ Object.keys(d.cases)[0]];
+          //var radius = Math.sqrt( cases / Math.PI );
+          
+          //if(cases == 0){
+            //return 0;
+          //}else{
+            return Math.sqrt( cases / Math.PI )*10;
+          //}
+        });
+    });
+});
+
+var displaySites = function(value) {
+
+  sites.transition().duration(100)
+        .attr("cases", function(d) { return d.cases[ Object.keys(d.cases)[value] ] })
+        .attr("r", function(d){
+          var cases = d.cases[ Object.keys(d.cases)[value]];
+          return Math.sqrt( cases / Math.PI )*10;
+        });
+};
+
+var minDateUnix = moment('2020-01-22', "YYYY MM DD").unix();
+var maxDateUnix = moment('2020-03-06', "YYYY MM DD").unix();
+var secondsInDay = 60 * 60 * 24;
+
+d3.select('#slider3').call(d3.slider()
+  .min(0).max(50).step(1)
+  .on("slide", function(evt, value) {
+    
+    displaySites(value);
+  })
+);
+
+</script>
+</body>
