@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-	<title>D3 Mapping Timeline</title>
+	<title>COVID-19 Timeline Map</title>
 <meta charset="utf-8">
 <link rel="stylesheet" href="d3.slider.css" />
 <style>
@@ -174,6 +174,14 @@ d3.csv("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_co
           "3/9/20": d["3/9/20"],
           "3/10/20": d["3/10/20"],
           "3/11/20": d["3/11/20"],
+          "3/12/20": d["3/12/20"],
+          "3/13/20": d["3/13/20"],
+          "3/14/20": d["3/14/20"],
+          "3/15/20": d["3/15/20"],
+          "3/16/20": d["3/16/20"],
+          "3/17/20": d["3/17/20"],
+          "3/18/20": d["3/18/20"],
+          "3/19/20": d["3/19/20"],
         }
       };
     })
@@ -232,7 +240,7 @@ var maxDateUnix = moment('2020-03-06', "YYYY MM DD").unix();
 var secondsInDay = 60 * 60 * 24;
 
 d3.select('#slider3').call(d3.slider()
-  .min(0).max(50).step(1)
+  .min(0).max(55).step(1)
   .on("slide", function(evt, value) {
     
     displaySites(value);
